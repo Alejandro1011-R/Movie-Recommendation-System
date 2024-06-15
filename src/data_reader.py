@@ -2,16 +2,16 @@ import pandas as pd
 
 def read_data():
     """
-    Reads the movie and ratings data from CSV files and preprocesses them.
+    Lee los datos de películas y calificaciones desde archivos CSV y los preprocesa.
 
     Returns
     -------
     md_genres : DataFrame
-        A DataFrame with movies and their genres, where each genre is a separate row.
+        Un DataFrame con las películas y sus géneros, donde cada género es una fila separada.
     ratings : DataFrame
-        A DataFrame with user ratings for movies.
+        Un DataFrame con las calificaciones de los usuarios para las películas.
     md : DataFrame
-        A DataFrame with movies and their genres, where genres are in a single column.
+        Un DataFrame con las películas y sus géneros, donde los géneros están en una sola columna.
     """
     md = pd.read_csv('movies.csv')
     md[['title', 'year']] = md['title'].str.extract(r'(.*)\s\((\d{4})\)', expand=True)
