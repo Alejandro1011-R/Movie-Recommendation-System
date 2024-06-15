@@ -13,10 +13,10 @@ def read_data():
     md : DataFrame
         Un DataFrame con las películas y sus géneros, donde los géneros están en una sola columna.
     """
-    md = pd.read_csv('movies.csv')
+    md = pd.read_csv('dataset/movies.csv')
     md[['title', 'year']] = md['title'].str.extract(r'(.*)\s\((\d{4})\)', expand=True)
     md['genres'] = md['genres'].str.split('|')
-    ratings = pd.read_csv('ratings.csv')
+    ratings = pd.read_csv('dataset/ratings.csv')
     md_genres = md.explode('genres')
 
     return md_genres, ratings, md

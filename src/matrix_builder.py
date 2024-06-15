@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
-from .data_reader import read_data
+from data_reader import *
+
+
 
 def build_matrix():
     """
