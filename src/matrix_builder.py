@@ -4,7 +4,7 @@ from data_reader import *
 
 
 
-def build_matrix():
+def build_matrix(md_genres, ratings, md):
     """
     Crea la matriz híbrida utilizada para calcular las similitudes entre los usuarios y sus preferencias de películas.
 
@@ -17,7 +17,6 @@ def build_matrix():
     md : DataFrame
         Un DataFrame con las películas y sus géneros, donde los géneros están en una sola columna.
     """
-    md_genres, ratings, md = read_data()
     merged = pd.merge(ratings, md_genres, on='movieId')
     merged['rating>3'] = (merged['rating'] > 3).astype(int)
 
