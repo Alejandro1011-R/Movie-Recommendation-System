@@ -30,23 +30,25 @@ class UserInteraction:
         Devuelve un DataFrame con las top 10 películas recomendadas para el usuario, listas para ser en la interfaz gráfica.
     """
 
-    def __init__(self, name):
+    def __init__(self, idx=None):
         """
         Inicializa la clase UserInteraction con los datos necesarios y prepara el sistema para un nuevo usuario.
 
         Parameters
         ----------
-        name : str
-            Nombre del usuario.
+        idx : int
+            id del usuario.
         """
         self.md_genres, self.ratings, self.md = read_data()
-        self.user = name
-        self.user_id = int(self.ratings['userId'].max()) + 1  # Asigna un nuevo ID único al usuario.
+        if not idx:
+            self.user_id = int(self.ratings['userId'].max()) + 1  # Asigna un nuevo ID único al usuario.
+        else:
+            self.user_id = idx
         self.recommender = Recommender(self.user_id)  # Crea una instancia del sistema de recomendaciones.
 
     def rate_movie(self, movie_id, rating):
         """
-        Permite al usuario calificar una película, añadiendo esta calificación al conjunto de datos.
+        Permite al usuario calificar una película, añadiendo o actualizando esta calificación en el conjunto de datos.
 
         Parameters
         ----------
@@ -55,9 +57,13 @@ class UserInteraction:
         rating : float
             La calificación otorgada por el usuario a la película.
         """
-        # Crea un nuevo DataFrame con la nueva calificación y lo concatena con el DataFrame de calificaciones existente.
-        new_data = pd.DataFrame([[self.user_id, movie_id, rating]], columns=self.ratings.columns)
-        self.ratings = pd.concat([self.ratings, new_data], ignore_index=True)
+        if ((self.ratings['userId'] == self.user_id) & (self.ratings['movieId'] == movie_id)).any():
+            # Actualiza la calificación si el usuario calificó la película
+            self.ratings.loc[(self.ratings['userId'] == self.user_id) & (self.ratings['movieId'] == movie_id), 'rating'] = rating
+        else:
+            # Añade una nueva fila si el usuario no calificó la película
+            new_data = pd.DataFrame([[self.user_id, movie_id, rating]], columns=['userId', 'movieId', 'rating'])
+            self.ratings = pd.concat([self.ratings, new_data], ignore_index=True)
 
     def get_recommendation(self):
         """
@@ -83,7 +89,9 @@ if __name__ == "__main__":
     user_interaction = UserInteraction("User123")
     print(f'{user_interaction.get_recommendation()}\n')
     user_interaction.rate_movie(1, 5.0)
-    user_interaction.rate_movie(2, 3.0)
+    user_interaction.rate_movie(1, 3.0)
+    user_interaction.rate_movie(1, 4.0)
+
 
 
     recommendations = user_interaction.get_recommendation()
