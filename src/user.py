@@ -6,29 +6,9 @@ class UserInteraction:
     """
     Clase destinada a manejar la interacción del usuario con el sistema de recomendaciones,
     facilitando la evaluación de películas y la obtención de recomendaciones.
-
-    Attributes
-    ----------
-    md_genres : DataFrame
-        DataFrame que contiene información sobre los géneros de las películas.
-    ratings : DataFrame
-        DataFrame que contiene las calificaciones que los usuarios han dado a las películas.
-    md : DataFrame
-        DataFrame que contiene información detallada de las películas.
-    user : str
-        Nombre del usuario que está utilizando el sistema.
-    user_id : int
-        Identificador único del usuario dentro del sistema.
-    recommender : Recommender
-        Instancia de la clase Recommender que proporciona métodos para generar recomendaciones de películas.
-
-    Methods
-    -------
-    rate_movie(movie_id, rating)
-        Permite al usuario calificar una película, agregando la información al DataFrame de calificaciones.
-    get_recommendation()
-        Devuelve un DataFrame con las top 10 películas recomendadas para el usuario, listas para ser en la interfaz gráfica.
     """
+
+    _recommendation_cache = {}  # Cache para guardar las recomendaciones de los usuarios
 
     def __init__(self, idx=None):
         """
@@ -65,6 +45,10 @@ class UserInteraction:
             new_data = pd.DataFrame([[self.user_id, movie_id, rating]], columns=['userId', 'movieId', 'rating'])
             self.ratings = pd.concat([self.ratings, new_data], ignore_index=True)
 
+        # Invalida la cache al usuario calificar una nueva película
+        if self.user_id in self._recommendation_cache:
+            del self._recommendation_cache[self.user_id]
+
     def get_recommendation(self):
         """
         Genera y devuelve un DataFrame con las top 10 películas recomendadas para el usuario.
@@ -74,15 +58,21 @@ class UserInteraction:
         DataFrame
             Un DataFrame que contiene las top 10 películas recomendadas, incluyendo sus detalles básicos.
         """
+        # Verifica si las recomendaciones estan en la cache
+        if self.user_id in self._recommendation_cache:
+            return self._recommendation_cache[self.user_id]
+
         # Verifica si el usuario ha calificado alguna película y obtiene recomendaciones basadas en eso.
         if self.user_id in self.ratings['userId'].unique():
             recommendation = self.recommender.recommend_movies(self.md_genres, self.ratings, self.md)
-            return recommendation.head(10)
+            self._recommendation_cache[self.user_id] = recommendation.head(10)
         else:
             # Si el usuario es completamente nuevo y no tiene calificaciones, devuelve las películas más populares.
             top_movies = self.ratings.groupby('movieId').rating.mean().nlargest(10).index
             top_movie_details = self.md[self.md['movieId'].isin(top_movies)]
-            return top_movie_details
+            self._recommendation_cache[self.user_id] = top_movie_details
+
+        return self._recommendation_cache[self.user_id]
 
 
 if __name__ == "__main__":
@@ -91,8 +81,6 @@ if __name__ == "__main__":
     user_interaction.rate_movie(1, 5.0)
     user_interaction.rate_movie(1, 3.0)
     user_interaction.rate_movie(1, 4.0)
-
-
 
     recommendations = user_interaction.get_recommendation()
     print("Recomendaciones obtenidas luego de dar rating:")
