@@ -17,7 +17,7 @@ def read_data():
     md[['title', 'year']] = md['title'].str.extract(r'(.*)\s\((\d{4})\)', expand=True)
     md['genres'] = md['genres'].str.split('|')
     ratings = pd.read_csv('dataset/ratings.csv')
-    ratings = ratings.drop('timestamp', axis=1)
+    #ratings = ratings.drop('timestamp', axis=1)
     md_genres = md.explode('genres')
 
     return md_genres, ratings, md
