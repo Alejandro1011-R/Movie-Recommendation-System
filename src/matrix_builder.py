@@ -20,10 +20,8 @@ def build_matrix(md_genres, ratings, md):
     """
     merged = pd.merge(ratings, md_genres, on='movieId')
     merged['rating>3'] = (merged['rating'] > 3).astype(int)
-    #print(merged['rating>3'])
-    #asumiendo que sea la linea anterior el unico material para predecir
-    pondValTimestamp(merged['timestamp'],merged['rating>3'])
-    
+    pondValTimestamp(merged['timestamp'], merged['rating>3'])
+
     grouped = merged.groupby(['userId', 'genres'])['rating>3'].sum().reset_index()
     grouped = grouped[grouped['genres'] != '(no genres listed)']
 
@@ -63,7 +61,13 @@ def build_matrix(md_genres, ratings, md):
     return hybrid_matrix, user_movie_matrix, md
 
 
-def pondValTimestamp(timestampArray,ratingsArray):
-    actualTimetamp=int(time.time())
+def pondValTimestamp(timestampArray, ratingsArray):
+    actualTimestamp = int(time.time())
+
+    # Convertir ratingsArray a tipo float si no lo es
+    if not np.issubdtype(ratingsArray.dtype, np.floating):
+        ratingsArray = ratingsArray.astype(np.float64)
+
     for i in range(len(ratingsArray)):
-        ratingsArray[i]=ratingsArray[i]*(timestampArray[i]/actualTimetamp) 
+        adjusted_value = ratingsArray[i] * (timestampArray[i] / actualTimestamp)
+        ratingsArray[i] = adjusted_value
