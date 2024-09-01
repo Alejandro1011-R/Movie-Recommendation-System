@@ -87,14 +87,15 @@ class Recommender:
                 title = mov['title'].values[0]
                 genres = mov['genres'].values[0]
                 year = mov['year'].values[0]
-                rate = round(self.predict_user_rating(ratings, movieId, neighbors), 2)
-                predicted_rating.append((movieId, title, genres, year, rate))
+
+                rating = round(self.predict_user_rating(ratings, movieId, neighbors), 2)
+                predicted_rating.append((movieId, title, genres, year, rating))
 
         predicted_rating = sorted(predicted_rating, key=lambda x: x[4], reverse=True)
-        predicted_rating = [rating for rating in predicted_rating if rating[4] > 3]
+        predicted_rating = [rate for rate in predicted_rating if rate[4] > 3]
 
-        rec = pd.DataFrame(predicted_rating, columns=['movieId', 'title', 'genres', 'year', 'rate'])
-        rec = rec.drop('rate', axis=1)
+        rec = pd.DataFrame(predicted_rating, columns=['movieId', 'title', 'genres', 'year', 'rating'])
+        rec['rating'] = 0
         return rec
 
     def recommend_movies_for_test(self, test_data, md_genres, rates, md):

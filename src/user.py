@@ -107,6 +107,10 @@ class UserInteraction:
             # Si el usuario es completamente nuevo y no tiene calificaciones, devuelve las películas más populares.
             top_movies = self.ratings.groupby('movieId').rating.mean().nlargest(10).index
             top_movie_details = self.md[self.md['movieId'].isin(top_movies)]
+            df2_filtered = self.ratings[self.ratings['userId'] == self.user_id]
+
+            top_movie_details = pd.merge(top_movie_details, df2_filtered[['movieId', 'rating']], on='movieId', how='left')
+            top_movie_details['rating'] = top_movie_details['rating'].fillna(0)
             self._recommendation_cache[self.user_id] = top_movie_details
 
         return self._recommendation_cache[self.user_id] #if self.user_id in self._recommendation_cache else top_movie_details
