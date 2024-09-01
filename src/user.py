@@ -49,19 +49,23 @@ class UserInteraction:
         rating : float
             La calificación otorgada por el usuario a la película.
         """
-        current_timestamp = int(time.time())  # Timestamp actual
+        current_timestamp = int(time.time())  # Obtén el timestamp actual
 
-        # Verifica si ya existe una calificación para este usuario y película
-        existing_rating = self.ratings[
-            (self.ratings['userId'] == int(self.user_id)) & (self.ratings['movieId'] == int(movie_id))
-        ]
+        # Asegurarse de que los tipos de datos sean consistentes
+        self.ratings['userId'] = self.ratings['userId'].astype(str)
+        self.ratings['movieId'] = self.ratings['movieId'].astype(int)
 
-        if not existing_rating.empty:
-            # Si ya existe, actualiza el rating y el timestamp
-            self.ratings.loc[
-                (self.ratings['userId'] == self.user_id) & (self.ratings['movieId'] == movie_id),
-                ['rating', 'timestamp']
-            ] = [rating, current_timestamp]
+        # Convertir self.user_id a string para la comparación
+        self.user_id = str(self.user_id)
+
+        # Encontrar el índice de la fila que queremos actualizar
+        indices_to_update = self.ratings[
+            (self.ratings['userId'] == self.user_id) & (self.ratings['movieId'] == movie_id)
+        ].index
+
+        if not indices_to_update.empty:
+            # Actualiza la calificación y el timestamp si el usuario ya calificó la película
+            self.ratings.loc[indices_to_update, ['rating', 'timestamp']] = [rating, current_timestamp]
         else:
             # Si no existe, añade una nueva fila con el rating y timestamp actual
             new_data = pd.DataFrame([[self.user_id, movie_id, rating, current_timestamp]],
@@ -106,7 +110,7 @@ class UserInteraction:
 
 
 if __name__ == "__main__":
-    user_interaction = UserInteraction("1212131413442411")
+    user_interaction = UserInteraction("699")
     print(f'{user_interaction.get_recommendation()}\n')
     user_interaction.rate_movie(1, 5.0)
     user_interaction.rate_movie(2, 3.0)
@@ -114,5 +118,14 @@ if __name__ == "__main__":
     user_interaction.rate_movie(9, 4.0)
 
     recommendations = user_interaction.get_recommendation()
-    print("Recomendaciones obtenidas luego de dar rating:")
+    print("1 - Recomendaciones obtenidas luego de dar rating:")
+    print(recommendations)
+
+
+    user_interaction.rate_movie(2, 1.0)
+    user_interaction.rate_movie(8, 1.0)
+    user_interaction.rate_movie(9, 3.0)
+
+    recommendations = user_interaction.get_recommendation()
+    print("2 - Recomendaciones obtenidas luego de dar rating:")
     print(recommendations)

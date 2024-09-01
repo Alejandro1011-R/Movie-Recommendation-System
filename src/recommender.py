@@ -97,6 +97,31 @@ class Recommender:
         rec = rec.drop('rate', axis=1)
         return rec
 
-# if __name__ == '__main__':
-#     example = Recommender(2)
-#     print(example.recommend_movies())
+    def recommend_movies_for_test(self, test_data, md_genres, rates, md):
+        """
+        Genera una lista de películas recomendadas para los usuarios de prueba.
+
+        Returns
+        -------
+        DataFrame
+            Un DataFrame que contiene las películas recomendadas y sus calificaciones predichas.
+        """
+        results = []
+        hybrid_matrix, ratings, movies = build_matrix(md_genres, rates, md)
+
+
+        for user_id in test_data['userId'].unique():
+            self.user_id = user_id
+            neighbors = find_neighbors(hybrid_matrix, user_id)
+            predicted_rating = []
+            user_rows = test_data.loc[(test_data['userId'] == user_id)]
+
+            for movieId in user_rows['movieId']:
+                rate = round(self.predict_user_rating(ratings, movieId, neighbors), 1)
+                if(rate):
+                    predicted_rating.append((user_id,movieId, rate))
+
+
+            results.append(predicted_rating)
+
+        return results
