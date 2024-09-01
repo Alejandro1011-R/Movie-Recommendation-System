@@ -26,17 +26,17 @@ def load_films(movies_to_display, name_tag):
 
     num_results = len(results)
     rows = (num_results // 3) + (num_results % 3 > 0)
-    
+
     for row in range(rows):
         cols = st.columns(3)
         for col, idx in zip(cols, range(row * 3, min((row + 1) * 3, num_results))):
             movie = results.iloc[idx]
             img = Image.open(image_path)
-            movie_caption = movie[name_tag] + "Year:" + movie['year'] + "Genres:" 
+            movie_caption = movie[name_tag] + "Year:" + movie['year'] + "Genres:"
             col.image(img, caption=movie[name_tag], use_column_width=True)
-            
+
             if col.button(f"Rate {movie[name_tag]}", key=f"rate_button_{idx}"):
-                
+
                 with st.form(key=f"rating_form_{idx}"):
                     rating = st.selectbox(f"Select your rating for {movie[name_tag]}", [1, 2, 3, 4, 5], key=f"rating_select_{idx}")
                     submit_button = st.form_submit_button(label="Save Rating")
@@ -72,7 +72,7 @@ def load_films_new(movies_to_display, name_tag):
 
     num_results = len(results)
     rows = (num_results // 3) + (num_results % 3 > 0)
-    
+
     with st.container():
         for row in range(rows):
             cols = st.columns(3)
@@ -81,7 +81,7 @@ def load_films_new(movies_to_display, name_tag):
                 img = Image.open(image_path)
                 movie_caption = f"**{movie[name_tag]}**\n\n**Year:** {movie['year']}\n\n**Genres:** {', '.join(movie['genres'])}"
                 col.image(img, caption=movie_caption, use_column_width=True)
-            
+
                 with col.form(key=f"rating_form_{idx}"):
                     rating = st.selectbox(f"Select your rating for {movie[name_tag]}", [1, 2, 3, 4, 5], key=f"rating_select_{idx}")
                     submit_button = st.form_submit_button(label="Save Rating")
@@ -112,13 +112,13 @@ def main():
 
     if 'user' in st.session_state:
         st.write(f"UserId: {st.session_state.user.user_id}")
-        
+
         # Add the "Recommend Movies" button at the top right corner
         recommend_button = st.button("Recommend Movies", key="recommend_button")
-        
+
         if recommend_button:
             recommended_movies = recommend_movies(st.session_state.user)
-            load_films_new(recommended_movies, 'name')
+            load_films_new(recommended_movies, 'title')
         else:
             load_films_new(st.session_state.user.md, 'title')
 
@@ -164,10 +164,10 @@ def main():
 
     # if st.session_state.user_id:
     #     st.write(f"UserId: {st.session_state.user_id}")
-        
+
     #     # Add the "Recommend Movies" button at the top right corner
     #     recommend_button = st.button("Recommend Movies", key="recommend_button")
-        
+
     #     if recommend_button:
     #         recommended_movies = recommend_movies(user)
     #         load_films(recommended_movies)
@@ -224,6 +224,3 @@ if __name__ == "__main__":
 # # Si se ha introducido un ID de usuario, recomienda películas para ese usuario
 # if user:
 #     recommend_movies(user)
-
-    
-
