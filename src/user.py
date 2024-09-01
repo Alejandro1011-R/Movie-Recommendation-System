@@ -63,10 +63,13 @@ class UserInteraction:
             (self.ratings['userId'] == self.user_id) & (self.ratings['movieId'] == movie_id)
         ].index
 
+
+
         if not indices_to_update.empty:
             # Actualiza la calificación y el timestamp si el usuario ya calificó la película
             self.ratings.loc[indices_to_update, ['rating', 'timestamp']] = [rating, current_timestamp]
         else:
+            self.user_id = int(self.user_id)
             # Si no existe, añade una nueva fila con el rating y timestamp actual
             new_data = pd.DataFrame([[self.user_id, movie_id, rating, current_timestamp]],
                                     columns=['userId', 'movieId', 'rating', 'timestamp'])
@@ -106,4 +109,27 @@ class UserInteraction:
             top_movie_details = self.md[self.md['movieId'].isin(top_movies)]
             self._recommendation_cache[self.user_id] = top_movie_details
 
-        return self._recommendation_cache[self.user_id]
+        return self._recommendation_cache[self.user_id] #if self.user_id in self._recommendation_cache else top_movie_details
+        # return self._recommendation_cache[self.user_id]
+
+
+if __name__ == "__main__":
+    user_interaction = UserInteraction("699")
+    print(f'{user_interaction.get_recommendation()}\n')
+    user_interaction.rate_movie(1, 5.0)
+    user_interaction.rate_movie(2, 3.0)
+    user_interaction.rate_movie(8, 4.0)
+    user_interaction.rate_movie(9, 4.0)
+
+    recommendations = user_interaction.get_recommendation()
+    print("1 - Recomendaciones obtenidas luego de dar rating:")
+    print(recommendations)
+
+
+    user_interaction.rate_movie(2, 1.0)
+    user_interaction.rate_movie(4, 1.0)
+    user_interaction.rate_movie(9, 1.0)
+
+    recommendations = user_interaction.get_recommendation()
+    print("2 - Recomendaciones obtenidas luego de dar rating:")
+    print(recommendations)
