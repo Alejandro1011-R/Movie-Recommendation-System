@@ -84,16 +84,16 @@ class Recommender:
         for movieId in ratings.columns:
             if ratings.loc[self.user_id, movieId] == 0:
                 mov = movies[movies['movieId'] == movieId]
-                name = mov['title'].values[0]
+                title = mov['title'].values[0]
                 genres = mov['genres'].values[0]
                 year = mov['year'].values[0]
                 rate = round(self.predict_user_rating(ratings, movieId, neighbors), 2)
-                predicted_rating.append((movieId, name, genres, year, rate))
+                predicted_rating.append((movieId, title, genres, year, rate))
 
         predicted_rating = sorted(predicted_rating, key=lambda x: x[4], reverse=True)
         predicted_rating = [rating for rating in predicted_rating if rating[4] > 3]
 
-        rec = pd.DataFrame(predicted_rating, columns=['movieId', 'name', 'genres', 'year', 'rate'])
+        rec = pd.DataFrame(predicted_rating, columns=['movieId', 'title', 'genres', 'year', 'rate'])
         rec = rec.drop('rate', axis=1)
         return rec
 
