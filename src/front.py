@@ -16,10 +16,11 @@ image_path = './movie_icon.jpg'
 user = None
 
 
-def load_films(movies_to_display):
+def load_films(movies_to_display, name_tag):
+    print("Loading films")
     search_query = st.text_input("Search for a movie:")
     if search_query:
-        results = movies_to_display[movies_to_display['title'].str.contains(search_query, case=False)].head(20)
+        results = movies_to_display[movies_to_display[name_tag].str.contains(search_query, case=False, na=False)].head(20)
     else:
         results = movies_to_display.head(20)
 
@@ -31,16 +32,66 @@ def load_films(movies_to_display):
         for col, idx in zip(cols, range(row * 3, min((row + 1) * 3, num_results))):
             movie = results.iloc[idx]
             img = Image.open(image_path)
-            col.image(img, caption=movie['title'], use_column_width=True)
+            movie_caption = movie[name_tag] + "Year:" + movie['year'] + "Genres:" 
+            col.image(img, caption=movie[name_tag], use_column_width=True)
             
-            if col.button(f"Rate {movie['title']}", key=f"rate_button_{idx}"):
+            if col.button(f"Rate {movie[name_tag]}", key=f"rate_button_{idx}"):
+                
                 with st.form(key=f"rating_form_{idx}"):
-                    rating = st.selectbox(f"Select your rating for {movie['title']}", [1, 2, 3, 4, 5], key=f"rating_select_{idx}")
-                    st.write(movie['movieId'])
+                    rating = st.selectbox(f"Select your rating for {movie[name_tag]}", [1, 2, 3, 4, 5], key=f"rating_select_{idx}")
+                    submit_button = st.form_submit_button(label="Save Rating")
+                    print("Entering rate values")
+                    if submit_button:
+                        print("entering to submit")
+                        st.session_state.user.rate_movie(movie['movieId'], rating)
+                        st.write(f"Rating for {movie[name_tag]}: {rating} stars")
+
+
+
+def load_films_new(movies_to_display, name_tag):
+    st.markdown(
+        """
+        <style>
+        .container {
+            width: 200% !important;
+        }
+        .block-container {
+            padding: 1rem 2rem;
+            max-width: 1200px
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    search_query = st.text_input("Search for a movie:")
+    if search_query:
+        results = movies_to_display[movies_to_display[name_tag].str.contains(search_query, case=False, na=False)].head(20)
+    else:
+        results = movies_to_display.head(20)
+
+    num_results = len(results)
+    rows = (num_results // 3) + (num_results % 3 > 0)
+    
+    with st.container():
+        for row in range(rows):
+            cols = st.columns(3)
+            for col, idx in zip(cols, range(row * 3, min((row + 1) * 3, num_results))):
+                movie = results.iloc[idx]
+                img = Image.open(image_path)
+                movie_caption = f"**{movie[name_tag]}**\n\n**Year:** {movie['year']}\n\n**Genres:** {', '.join(movie['genres'])}"
+                col.image(img, caption=movie_caption, use_column_width=True)
+            
+                with col.form(key=f"rating_form_{idx}"):
+                    rating = st.selectbox(f"Select your rating for {movie[name_tag]}", [1, 2, 3, 4, 5], key=f"rating_select_{idx}")
                     submit_button = st.form_submit_button(label="Save Rating")
                     if submit_button:
+                        print("Entering submit")
                         st.session_state.user.rate_movie(movie['movieId'], rating)
-                        st.write(f"Rating for {movie['title']}: {rating} stars")
+                        st.write(f"Rating for {movie[name_tag]}: {rating} stars")
+
+
+
 
 def create_user(user_name):
     # Placeholder for creating a new user
@@ -67,9 +118,9 @@ def main():
         
         if recommend_button:
             recommended_movies = recommend_movies(st.session_state.user)
-            load_films(recommended_movies)
+            load_films_new(recommended_movies, 'name')
         else:
-            load_films(movies)
+            load_films_new(st.session_state.user.md, 'title')
 
     else:
         if 'creating_new_user' in st.session_state:
