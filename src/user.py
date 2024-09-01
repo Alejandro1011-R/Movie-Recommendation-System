@@ -107,25 +107,3 @@ class UserInteraction:
             self._recommendation_cache[self.user_id] = top_movie_details
 
         return self._recommendation_cache[self.user_id]
-
-
-if __name__ == "__main__":
-    user_interaction = UserInteraction("699")
-    print(f'{user_interaction.get_recommendation()}\n')
-    user_interaction.rate_movie(1, 5.0)
-    user_interaction.rate_movie(2, 3.0)
-    user_interaction.rate_movie(8, 4.0)
-    user_interaction.rate_movie(9, 4.0)
-
-    recommendations = user_interaction.get_recommendation()
-    print("1 - Recomendaciones obtenidas luego de dar rating:")
-    print(recommendations)
-
-
-    user_interaction.rate_movie(2, 1.0)
-    user_interaction.rate_movie(8, 1.0)
-    user_interaction.rate_movie(9, 3.0)
-
-    recommendations = user_interaction.get_recommendation()
-    print("2 - Recomendaciones obtenidas luego de dar rating:")
-    print(recommendations)
