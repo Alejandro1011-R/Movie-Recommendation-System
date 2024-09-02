@@ -110,30 +110,29 @@ class UserInteraction:
             df2_filtered = self.ratings[self.ratings['userId'] == self.user_id]
 
             top_movie_details = pd.merge(top_movie_details, df2_filtered[['movieId', 'rating']], on='movieId', how='left')
-            top_movie_details['rating'] = top_movie_details['rating'].fillna(0)
             self._recommendation_cache[self.user_id] = top_movie_details
 
         return self._recommendation_cache[self.user_id] #if self.user_id in self._recommendation_cache else top_movie_details
         # return self._recommendation_cache[self.user_id]
 
 
-if __name__ == "__main__":
-    user_interaction = UserInteraction("699")
-    print(f'{user_interaction.get_recommendation()}\n')
-    user_interaction.rate_movie(1, 5.0)
-    user_interaction.rate_movie(2, 3.0)
-    user_interaction.rate_movie(8, 4.0)
-    user_interaction.rate_movie(9, 4.0)
+# if __name__ == "__main__":
+#     user_interaction = UserInteraction("699")
+#     print(f'{user_interaction.get_recommendation()}\n')
+#     user_interaction.rate_movie(1, 5.0)
+#     user_interaction.rate_movie(2, 3.0)
+#     user_interaction.rate_movie(8, 4.0)
+#     user_interaction.rate_movie(9, 4.0)
 
-    recommendations = user_interaction.get_recommendation()
-    print("1 - Recomendaciones obtenidas luego de dar rating:")
-    print(recommendations)
+#     recommendations = user_interaction.get_recommendation()
+#     print("1 - Recomendaciones obtenidas luego de dar rating:")
+#     print(recommendations)
 
 
-    user_interaction.rate_movie(2, 1.0)
-    user_interaction.rate_movie(4, 1.0)
-    user_interaction.rate_movie(9, 1.0)
+#     user_interaction.rate_movie(2, 1.0)
+#     user_interaction.rate_movie(4, 1.0)
+#     user_interaction.rate_movie(9, 1.0)
 
-    recommendations = user_interaction.get_recommendation()
-    print("2 - Recomendaciones obtenidas luego de dar rating:")
-    print(recommendations)
+#     recommendations = user_interaction.get_recommendation()
+#     print("2 - Recomendaciones obtenidas luego de dar rating:")
+#     print(recommendations)

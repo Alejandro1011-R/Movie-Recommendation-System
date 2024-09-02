@@ -46,6 +46,7 @@ def load_films(movies_to_display, name_tag):
                 movie = results.iloc[idx]
                 img = Image.open(image_path)
                 movie_rating = int(movie['rating'])
+                print(movie_rating)
                 if movie_rating < 1:
                     movie_rating = "-"
 
@@ -114,7 +115,7 @@ def main():
             user_id = st.selectbox('Seleccione su ID', user_ids)
 
             if user_id:
-                st.session_state.user = UserInteraction(user_id)
+                st.session_state.user = UserInteraction(str(user_id))
                 st.session_state.recommendations = recommend_movies(st.session_state.user)
                 st.write(f"UserId: {st.session_state.user.user_id}")
                 st.rerun()
