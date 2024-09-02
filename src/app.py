@@ -45,12 +45,12 @@ def load_films(movies_to_display, name_tag):
             for col, idx in zip(cols, range(row * 3, min((row + 1) * 3, num_results))):
                 movie = results.iloc[idx]
                 img = Image.open(image_path)
-                movie_rating = int(movie['rating'])
-                print(movie_rating)
-                if movie_rating < 1:
-                    movie_rating = "-"
+                # movie_rating = int(movie['rating'])
+                # print(movie_rating)
+                # if movie_rating < 1:
+                #     movie_rating = "-"
 
-                movie_caption = f"{movie[name_tag]},  Año: {movie['year']},  Rating: {movie_rating}"
+                movie_caption = f"{movie[name_tag]},  Año: {movie['year']}"
                 col.image(img, caption=movie_caption, use_column_width=True)
 
                 with col.form(key=f"rating_form_{idx}"):
@@ -67,7 +67,7 @@ def main():
     Función main para correr la aplicación de streamlit
     Maneja las interacciones del usuario, incluyendo la creación de nuevos usuarios, recomendación y calificación de filmes
     """
-    
+
     st.title("Sistema de recomendación de películas")
 
     if 'user' not in st.session_state:
@@ -150,5 +150,5 @@ if __name__ == "__main__":
 
     # establece la dirección de la imagen que se utiliza para mostrar las películas
     image_path = './movie_icon.jpg'
-    user = None     
+    user = None
     main()
