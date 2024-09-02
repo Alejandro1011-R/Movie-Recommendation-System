@@ -22,16 +22,16 @@ Las películas utilizadas en este sistema provienen del dataset de MovieLens, pr
 - Pandas para el manejo de datos.
 
 ## Instalación
-Clona el repositorio y instala las dependencias:
 ```bash
 git clone https://github.com/Alejandro1011-R/Movie-Recommendation-System.git
 cd Movie-Recommendation-System
-pip install -r requirements.txt
 ```
 
 ## Uso
 Para iniciar la aplicación, ejecuta:
 ```bash
-streamlit run front.py
+chmod +x startup.sh
+./startup.sh
+
 ```
 Este script iniciará la aplicación Streamlit. Sigue las instrucciones en la interfaz para buscar películas, calificarlas y recibir recomendaciones.
